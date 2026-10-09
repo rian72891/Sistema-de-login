@@ -231,6 +231,9 @@
             }
 
             // Passou em todas as validações!
+            localStorage.setItem("usuarioCadastrado", usuario.value.trim());
+            localStorage.setItem("senhaCadastrada", senha.value);
+
             mostrarMensagem(
                 "Cadastro realizado, " + nome.value.trim() + "! Redirecionando para o login...",
                 "green"

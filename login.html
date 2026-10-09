@@ -154,8 +154,11 @@
             const senha = document.getElementById("senha").value;
             const mensagem = document.getElementById("mensagem");
 
-            // Login de teste
-            if (usuario === "admin" && senha === "1234") {
+            // Compara com os dados salvos durante o cadastro neste navegador.
+            const usuarioCadastrado = localStorage.getItem("usuarioCadastrado");
+            const senhaCadastrada = localStorage.getItem("senhaCadastrada");
+
+            if (usuario === usuarioCadastrado && senha === senhaCadastrada) {
 
                 mensagem.textContent = "Login realizado! Entrando...";
                 mensagem.style.color = "green";
