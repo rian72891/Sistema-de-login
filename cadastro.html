@@ -5,7 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro - Tech System</title>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
     <style>
+        :root {
+            --ink: #0b1b3a;
+            --text: #1e293b;
+            --muted: #5b6b82;
+            --line: #dce1e9;
+            --paper: #f4f6f9;
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-soft: #eaf0fe;
+            --danger: #dc2626;
+            --font: "Manrope", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -13,152 +30,405 @@
         }
 
         body {
-            font-family: Arial, sans-serif;
-            background: #f2f4f7;
+            font-family: var(--font);
+            color: var(--text);
+            background: #fff;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a {
+            color: var(--primary);
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        :focus-visible {
+            outline: 3px solid rgba(37, 99, 235, 0.45);
+            outline-offset: 2px;
+        }
+
+        .logo {
             display: flex;
-            justify-content: center;
             align-items: center;
+            gap: 10px;
+            font-weight: 800;
+            font-size: 20px;
+            letter-spacing: -0.02em;
+        }
+
+        .logo svg {
+            width: 32px;
+            height: 32px;
+            flex-shrink: 0;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                transition: none !important;
+            }
+        }
+
+        .auth {
+            display: grid;
+            grid-template-columns: 5fr 6fr;
             min-height: 100vh;
-            padding: 20px;
+        }
+
+        /* ---------- Painel de marca ---------- */
+        .panel {
+            background-color: var(--ink);
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 48px 48px;
+            color: #fff;
+            padding: 48px 56px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .panel .headline {
+            font-size: clamp(30px, 3.2vw, 44px);
+            font-weight: 800;
+            line-height: 1.12;
+            letter-spacing: -0.03em;
+            max-width: 15em;
+        }
+
+        .beneficios {
+            list-style: none;
+            margin-top: 32px;
+            display: grid;
+            gap: 14px;
+        }
+
+        .beneficios li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #c7d2e6;
+            font-size: 16px;
+        }
+
+        .beneficios svg {
+            width: 22px;
+            height: 22px;
+            padding: 4px;
+            border-radius: 50%;
+            background: var(--primary);
+            stroke: #fff;
+            stroke-width: 3;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            flex-shrink: 0;
+        }
+
+        .panel small {
+            color: #8a99b5;
+            font-size: 13px;
+        }
+
+        /* ---------- Formulário ---------- */
+        .form-side {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 24px;
+            background: #fff;
         }
 
         main {
-            background: white;
             width: 100%;
-            max-width: 400px;
-            padding: 35px;
-            border-radius: 12px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            max-width: 420px;
         }
 
-        h1 {
-            text-align: center;
-            color: #2563eb;
-            margin-bottom: 10px;
+        .logo-mobile {
+            display: none;
+            margin-bottom: 32px;
+            color: var(--ink);
         }
 
-        h2 {
-            text-align: center;
-            margin-bottom: 30px;
-            color: #333;
+        main h1 {
+            font-size: 30px;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+            color: var(--ink);
+            line-height: 1.2;
         }
+
+        .subtitulo {
+            color: var(--muted);
+            margin: 8px 0 32px;
+        }
+
+        .campo {
+            margin-bottom: 18px;
+        }
+
 
         label {
             display: block;
-            margin-bottom: 8px;
-            color: #333;
-            font-weight: bold;
+            margin-bottom: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--ink);
+        }
+
+        .controle {
+            position: relative;
         }
 
         input {
             width: 100%;
-            padding: 12px;
-            margin-bottom: 20px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
+            height: 48px;
+            padding: 0 14px;
+            border: 1px solid #c5cdd9;
+            border-radius: 8px;
+            background: #fff;
+            color: var(--ink);
+            font-family: inherit;
             font-size: 16px;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+
+        input::placeholder {
+            color: #8793a6;
+        }
+
+        input:hover {
+            border-color: #9aa6b8;
         }
 
         input:focus {
             outline: none;
-            border-color: #2563eb;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.16);
         }
 
         /* Borda vermelha quando o campo tiver erro */
         input.erro {
-            border-color: #dc2626;
+            border-color: var(--danger);
+            box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.12);
         }
 
-        button {
-            width: 100%;
-            padding: 12px;
+        .controle input[type="password"],
+        .controle input.com-toggle {
+            padding-right: 46px;
+        }
+
+        .toggle-senha {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 46px;
+            height: 48px;
+            display: grid;
+            place-items: center;
+            background: none;
             border: none;
-            border-radius: 6px;
-            background: #2563eb;
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
+            border-radius: 0 8px 8px 0;
+            color: var(--muted);
             cursor: pointer;
         }
 
-        button:hover {
-            background: #1d4ed8;
+        .toggle-senha:hover {
+            color: var(--ink);
+        }
+
+        .toggle-senha svg {
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .toggle-senha .off {
+            display: none;
+        }
+
+        .toggle-senha.ativo .on {
+            display: none;
+        }
+
+        .toggle-senha.ativo .off {
+            display: block;
+        }
+
+        button[type="submit"] {
+            width: 100%;
+            height: 50px;
+            margin-top: 6px;
+            border: none;
+            border-radius: 8px;
+            background: var(--primary);
+            color: #fff;
+            font-family: inherit;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        button[type="submit"]:hover {
+            background: var(--primary-dark);
         }
 
         #mensagem {
-            margin-top: 15px;
+            min-height: 22px;
+            margin-top: 14px;
             text-align: center;
+            font-size: 14px;
+            font-weight: 600;
         }
 
         .links {
+            margin-top: 24px;
+            padding-top: 22px;
+            border-top: 1px solid var(--line);
             text-align: center;
-            margin-top: 20px;
+            font-size: 14px;
+            color: var(--muted);
         }
 
-        .links a {
-            color: #2563eb;
-            text-decoration: none;
+        @media (max-width: 900px) {
+            .auth {
+                grid-template-columns: 1fr;
+            }
+
+            .panel {
+                display: none;
+            }
+
+            .logo-mobile {
+                display: flex;
+            }
+
+            .form-side {
+                align-items: flex-start;
+                padding-top: 48px;
+            }
         }
 
-        .links a:hover {
-            text-decoration: underline;
-        }
     </style>
 </head>
 
 <body>
 
+<div class="auth">
+
+    <aside class="panel">
+        <div class="logo">
+            <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#2563eb"/><path d="M9 11h14M16 11v11" stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none"/></svg>
+            Tech System
+        </div>
+
+        <div>
+            <p class="headline">Crie sua conta e comece a organizar o seu negócio.</p>
+
+            <ul class="beneficios">
+                <li><svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>Painéis com insights em tempo real</li>
+                <li><svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>Automação que reduz tarefas manuais</li>
+                <li><svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>Suporte 24/7 para a sua equipe</li>
+            </ul>
+        </div>
+
+        <small>&copy; 2026 Tech System</small>
+    </aside>
+
+    <div class="form-side">
     <main>
-        <h1>Tech System</h1>
-        <h2>Criar Conta</h2>
+        <div class="logo logo-mobile">
+            <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#2563eb"/><path d="M9 11h14M16 11v11" stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none"/></svg>
+            Tech System
+        </div>
+
+        <h1>Criar Conta</h1>
+        <p class="subtitulo">Preencha os dados abaixo para começar.</p>
 
         <form id="formCadastro">
 
-            <label for="nome">Nome completo:</label>
-            <input
-                type="text"
-                id="nome"
-                placeholder="Digite seu nome"
-                required
-            >
+            <div class="campo">
+                <label for="nome">Nome completo:</label>
+                <input
+                    type="text"
+                    id="nome"
+                    placeholder="Digite seu nome"
+                    autocomplete="name"
+                    required
+                >
+            </div>
 
-            <label for="email">E-mail:</label>
-            <input
-                type="email"
-                id="email"
-                placeholder="Digite seu e-mail"
-                required
-            >
+            <div class="campo">
+                <label for="email">E-mail:</label>
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="Digite seu e-mail"
+                    autocomplete="email"
+                    required
+                >
+            </div>
 
-            <label for="usuario">Usuário:</label>
-            <input
-                type="text"
-                id="usuario"
-                placeholder="Escolha um nome de usuário"
-                required
-            >
+            <div class="campo">
+                <label for="usuario">Usuário:</label>
+                <input
+                    type="text"
+                    id="usuario"
+                    placeholder="Escolha um nome de usuário"
+                    autocomplete="username"
+                    required
+                >
+            </div>
 
-            <label for="senha">Senha:</label>
-            <input
-                type="password"
-                id="senha"
-                placeholder="Mínimo de 6 caracteres"
-                required
-            >
+            <div class="campo">
+                <label for="senha">Senha:</label>
+                <div class="controle">
+                    <input
+                        type="password"
+                        id="senha"
+                        placeholder="Mínimo de 6 caracteres"
+                        autocomplete="new-password"
+                        required
+                    >
+                    <button type="button" class="toggle-senha" data-alvo="senha" aria-label="Mostrar senha">
+                        <svg class="on" viewBox="0 0 24 24" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        <svg class="off" viewBox="0 0 24 24" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                    </button>
+                </div>
+            </div>
+            <div class="campo">
+                <label for="confirmarSenha">Confirmar senha:</label>
+                <div class="controle">
+                    <input
+                        type="password"
+                        id="confirmarSenha"
+                        placeholder="Digite a senha novamente"
+                        autocomplete="new-password"
+                        required
+                    >
+                    <button type="button" class="toggle-senha" data-alvo="confirmarSenha" aria-label="Mostrar senha">
+                        <svg class="on" viewBox="0 0 24 24" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        <svg class="off" viewBox="0 0 24 24" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                    </button>
+                </div>
+            </div>
 
-            <label for="confirmarSenha">Confirmar senha:</label>
-            <input
-                type="password"
-                id="confirmarSenha"
-                placeholder="Digite a senha novamente"
-                required
-            >
 
             <button type="submit">Cadastrar</button>
 
         </form>
 
-        <p id="mensagem"></p>
+        <p id="mensagem" role="status" aria-live="polite"></p>
 
         <div class="links">
             <p>
@@ -167,6 +437,9 @@
             </p>
         </div>
     </main>
+    </div>
+
+</div>
 
     <script>
         const formCadastro = document.getElementById("formCadastro");
@@ -242,6 +515,20 @@
             setTimeout(function() {
                 window.location.href = "login.html";
             }, 1500);
+        });
+    </script>
+
+    <script>
+        // Mostrar / ocultar senha
+        document.querySelectorAll(".toggle-senha").forEach(function(botao) {
+            botao.addEventListener("click", function() {
+                const campo = document.getElementById(botao.dataset.alvo);
+                const mostrar = campo.type === "password";
+
+                campo.type = mostrar ? "text" : "password";
+                botao.classList.toggle("ativo", mostrar);
+                botao.setAttribute("aria-label", mostrar ? "Ocultar senha" : "Mostrar senha");
+            });
         });
     </script>
 
