@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0b1b3a">
+    <title>Tech System — Cadastro, Login e Painel</title>
+    <style>
+        :root {
+            --ink: #0b1b3a;
+            --text: #1e293b;
+            --muted: #5b6b82;
+            --line: #dce1e9;
+            --paper: #f4f6f9;
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-soft: #eaf0fe;
+            --danger: #dc2626;
+            --success: #15803d;
+            --font: "Manrope", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        [hidden] { display: none !important; }
+
+        body {
+            min-height: 100vh;
+            color: var(--text);
+            background: #fff;
+            font-family: var(--font);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a { color: var(--primary); font-weight: 700; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        :focus-visible { outline: 3px solid rgba(37, 99, 235, .45); outline-offset: 2px; }
+
+        .logo { display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 800; letter-spacing: -.02em; }
+        .logo svg { width: 32px; height: 32px; flex: 0 0 auto; }
+
+        /* Cadastro e login compartilham o mesmo layout e identidade visual. */
+        .auth-screen { display: grid; grid-template-columns: 5fr 6fr; min-height: 100vh; }
+        .brand-panel {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 48px 56px;
+            color: #fff;
+            background-color: var(--ink);
+            background-image: linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px);
+            background-size: 48px 48px;
+        }
+        .brand-panel .headline { max-width: 15em; font-size: clamp(30px, 3.2vw, 44px); font-weight: 800; line-height: 1.12; letter-spacing: -.03em; }
+        .benefits { display: grid; gap: 14px; margin-top: 32px; list-style: none; }
+        .benefits li { display: flex; align-items: center; gap: 12px; color: #c7d2e6; font-size: 16px; }
+        .benefits svg { width: 22px; height: 22px; padding: 4px; flex: 0 0 auto; border-radius: 50%; background: var(--primary); stroke: #fff; stroke-width: 3; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+        .brand-panel small { color: #8a99b5; font-size: 13px; }
+        .form-side { display: flex; align-items: center; justify-content: center; padding: 40px 24px; background: #fff; }
+        .form-card { width: 100%; max-width: 420px; }
+        .logo-mobile { display: none; margin-bottom: 32px; color: var(--ink); }
+        .form-card h1 { color: var(--ink); font-size: 30px; font-weight: 800; line-height: 1.2; letter-spacing: -.025em; }
+        .subtitle { margin: 8px 0 32px; color: var(--muted); }
+        .field { margin-bottom: 18px; }
+        label { display: block; margin-bottom: 6px; color: var(--ink); font-size: 14px; font-weight: 700; }
+        .control { position: relative; }
+        input {
+            width: 100%; height: 48px; padding: 0 14px;
+            border: 1px solid #c5cdd9; border-radius: 8px;
+            background: #fff; color: var(--ink); font: inherit; font-size: 16px;
+            transition: border-color .15s, box-shadow .15s;
+        }
+        input::placeholder { color: #8793a6; }
+        input:hover { border-color: #9aa6b8; }
+        input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(37,99,235,.16); }
+        input.erro { border-color: var(--danger); box-shadow: 0 0 0 4px rgba(220,38,38,.12); }
+        .control input { padding-right: 50px; }
+        .toggle-password {
+            position: absolute; top: 0; right: 0; display: grid; place-items: center;
+            width: 46px; height: 48px; border: 0; border-radius: 0 8px 8px 0;
+            background: transparent; color: var(--muted); cursor: pointer;
+        }
+        .toggle-password:hover { color: var(--ink); }
+        .toggle-password svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        .toggle-password .eye-off { display: none; }
+        .toggle-password.active .eye-on { display: none; }
+        .toggle-password.active .eye-off { display: block; }
+        .submit-button {
+            width: 100%; height: 50px; margin-top: 6px; border: 0; border-radius: 8px;
+            background: var(--primary); color: #fff; font: inherit; font-size: 16px;
+            font-weight: 800; cursor: pointer; transition: background .15s;
+        }
+        .submit-button:hover { background: var(--primary-dark); }
+        .message { min-height: 22px; margin-top: 14px; text-align: center; font-size: 14px; font-weight: 700; }
+        .message.error { color: var(--danger); }
+        .message.success { color: var(--success); }
+        .links { margin-top: 24px; padding-top: 22px; border-top: 1px solid var(--line); color: var(--muted); text-align: center; font-size: 14px; }
+        .links p + p { margin-top: 10px; }
+
+        /* Painel, correspondente ao index.html do projeto. */
+        .dashboard-screen { min-height: 100vh; background: var(--paper); }
+        .topbar {
+            display: flex; align-items: center; justify-content: space-between;
+            height: 68px; padding: 0 32px; border-bottom: 1px solid var(--line); background: #fff;
+        }
+        .topbar .logo { color: var(--ink); }
+        .topbar-right { display: flex; align-items: center; gap: 16px; }
+        .logged-user { display: flex; align-items: center; gap: 10px; color: var(--ink); font-size: 14px; font-weight: 700; }
+        .avatar { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--primary-soft); color: var(--primary-dark); font-weight: 800; }
+        .logout-button { height: 40px; padding: 0 18px; border: 1px solid var(--line); border-radius: 8px; background: #fff; color: var(--ink); font: inherit; font-size: 14px; font-weight: 800; cursor: pointer; transition: background .15s, border-color .15s; }
+        .logout-button:hover { border-color: #b9c3d2; background: var(--paper); }
+        .dashboard-main { max-width: 1080px; margin: 40px auto 56px; padding: 0 24px; }
+        .welcome {
+            padding: 48px 44px; border-radius: 14px; color: #fff;
+            background-color: var(--ink);
+            background-image: linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px);
+            background-size: 48px 48px;
+        }
+        .welcome h2 { margin-bottom: 12px; font-size: clamp(28px, 4vw, 40px); font-weight: 800; line-height: 1.15; letter-spacing: -.03em; }
+        .welcome p { color: #c7d2e6; font-size: 18px; }
+        .areas-title { margin: 40px 0 16px; color: var(--ink); font-size: 18px; font-weight: 800; }
+        .areas { display: grid; grid-template-columns: repeat(3, 1fr); overflow: hidden; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+        .card { padding: 28px; }
+        .card + .card { border-left: 1px solid var(--line); }
+        .icon-box { display: grid; place-items: center; width: 42px; height: 42px; margin-bottom: 18px; border-radius: 10px; background: var(--primary-soft); color: var(--primary-dark); }
+        .icon-box svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        .card h3 { margin-bottom: 6px; color: var(--ink); font-size: 18px; font-weight: 800; }
+        .card p { color: var(--muted); }
+        .demo-note { margin-top: 22px; color: var(--muted); text-align: center; font-size: 12px; }
+
+        @media (max-width: 900px) {
+            .auth-screen { grid-template-columns: 1fr; }
+            .brand-panel { display: none; }
+            .logo-mobile { display: flex; }
+            .form-side { align-items: flex-start; padding-top: 48px; }
+        }
+        @media (max-width: 760px) {
+            .topbar { padding: 0 20px; }
+            .logged-user span:last-child { display: none; }
+            .welcome { padding: 36px 26px; }
+            .areas { grid-template-columns: 1fr; }
+            .card + .card { border-top: 1px solid var(--line); border-left: 0; }
+        }
+        @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; } }
+    </style>
+</head>
+<body>
+    <div class="auth-screen" id="authScreen">
+        <aside class="brand-panel" aria-label="Sobre o Tech System">
+            <div class="logo">
+                <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#2563eb"/><path d="M9 11h14M16 11v11" stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none"/></svg>
+                Tech System
+            </div>
+            <div>
+                <p class="headline" id="brandHeadline">Crie sua conta e comece a organizar o seu negócio.</p>
+                <ul class="benefits">
+                    <li><svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>Painéis com insights em tempo real</li>
+                    <li><svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>Automação que reduz tarefas manuais</li>
+                    <li><svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>Suporte 24/7 para a sua equipe</li>
+                </ul>
+            </div>
+            <small>&copy; 2026 Tech System</small>
+        </aside>
+
+        <div class="form-side">
+            <section class="form-card" id="cadastroView" data-view="cadastro" aria-labelledby="cadastroTitle">
+                <div class="logo logo-mobile">
+                    <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#2563eb"/><path d="M9 11h14M16 11v11" stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none"/></svg>
+                    Tech System
+                </div>
+                <h1 id="cadastroTitle">Criar Conta</h1>
+                <p class="subtitle">Preencha os dados abaixo para começar.</p>
+
+                <form id="formCadastro" novalidate>
+                    <div class="field">
+                        <label for="cad-nome">Nome completo:</label>
+                        <input type="text" id="cad-nome" placeholder="Digite seu nome" autocomplete="name" required>
+                    </div>
+                    <div class="field">
+                        <label for="cad-email">E-mail:</label>
+                        <input type="email" id="cad-email" placeholder="Digite seu e-mail" autocomplete="email" required>
+                    </div>
+                    <div class="field">
+                        <label for="cad-usuario">Usuário:</label>
+                        <input type="text" id="cad-usuario" placeholder="Escolha um nome de usuário" autocomplete="username" required>
+                    </div>
+                    <div class="field">
+                        <label for="cad-senha">Senha:</label>
+                        <div class="control">
+                            <input type="password" id="cad-senha" placeholder="Mínimo de 6 caracteres" autocomplete="new-password" required>
+                            <button class="toggle-password" type="button" data-target="cad-senha" aria-label="Mostrar senha">
+                                <svg class="eye-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                <svg class="eye-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="cad-confirmar">Confirmar senha:</label>
+                        <div class="control">
+                            <input type="password" id="cad-confirmar" placeholder="Digite a senha novamente" autocomplete="new-password" required>
+                            <button class="toggle-password" type="button" data-target="cad-confirmar" aria-label="Mostrar senha">
+                                <svg class="eye-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                <svg class="eye-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <button class="submit-button" type="submit">Cadastrar</button>
+                </form>
+                <p class="message" id="cadastroMensagem" role="status" aria-live="polite"></p>
+                <div class="links"><p>Já possui uma conta? <a href="#login" data-route="login">Entrar</a></p></div>
+            </section>
+
+            <section class="form-card" id="loginView" data-view="login" aria-labelledby="loginTitle" hidden>
+                <div class="logo logo-mobile">
+                    <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#2563eb"/><path d="M9 11h14M16 11v11" stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none"/></svg>
+                    Tech System
+                </div>
+                <h1 id="loginTitle">Área de Login</h1>
+                <p class="subtitle">Acesse sua conta para continuar.</p>
+
+                <form id="formLogin" novalidate>
+                    <div class="field">
+                        <label for="login-usuario">Usuário:</label>
+                        <input type="text" id="login-usuario" placeholder="Digite seu usuário" autocomplete="username" required>
+                    </div>
+                    <div class="field">
+                        <label for="login-senha">Senha:</label>
+                        <div class="control">
+                            <input type="password" id="login-senha" placeholder="Digite sua senha" autocomplete="current-password" required>
+                            <button class="toggle-password" type="button" data-target="login-senha" aria-label="Mostrar senha">
+                                <svg class="eye-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                <svg class="eye-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <button class="submit-button" type="submit">Entrar</button>
+                </form>
+                <p class="message" id="loginMensagem" role="status" aria-live="polite"></p>
+                <div class="links">
+                    <p><a href="#login" id="forgotPassword">Esqueci minha senha</a></p>
+                    <p>Ainda não possui uma conta? <a href="#cadastro" data-route="cadastro">Cadastre-se</a></p>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <section class="dashboard-screen" id="dashboardView" data-view="painel" hidden>
+        <header class="topbar">
+            <h1 class="logo">
+                <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#2563eb"/><path d="M9 11h14M16 11v11" stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none"/></svg>
+                Tech System
+            </h1>
+            <div class="topbar-right">
+                <div class="logged-user" id="usuarioLogado" hidden>
+                    <span class="avatar" id="avatar" aria-hidden="true"></span>
+                    <span id="nomeUsuario"></span>
+                </div>
+                <button class="logout-button" id="botaoSair" type="button">Sair</button>
+            </div>
+        </header>
+        <main class="dashboard-main">
+            <section class="welcome">
+                <h2>Bem-vindo ao Tech System!</h2>
+                <p>Você entrou no sistema com sucesso.</p>
+            </section>
+            <h2 class="areas-title">Áreas do sistema</h2>
+            <section class="areas" aria-label="Áreas do sistema">
+                <article class="card">
+                    <div class="icon-box"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
+                    <h3>Dashboard</h3><p>Área principal do sistema.</p>
+                </article>
+                <article class="card">
+                    <div class="icon-box"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+                    <h3>Usuários</h3><p>Gerencie os usuários do sistema.</p>
+                </article>
+                <article class="card">
+                    <div class="icon-box"><svg viewBox="0 0 24 24" aria-hidden="true"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg></div>
+                    <h3>Configurações</h3><p>Configure as opções do sistema.</p>
+                </article>
+            </section>
+            <p class="demo-note">Projeto demonstrativo: os dados são armazenados somente neste navegador.</p>
+        </main>
+    </section>
+
+    <script>
+        (() => {
+            const authScreen = document.getElementById("authScreen");
+            const cadastroView = document.getElementById("cadastroView");
+            const loginView = document.getElementById("loginView");
+            const dashboardView = document.getElementById("dashboardView");
+            const brandHeadline = document.getElementById("brandHeadline");
+            const cadastroMensagem = document.getElementById("cadastroMensagem");
+            const loginMensagem = document.getElementById("loginMensagem");
+
+            function setMessage(element, text, kind) {
+                element.textContent = text;
+                element.classList.remove("error", "success");
+                if (kind) element.classList.add(kind);
+            }
+
+            function showView(view) {
+                const loggedIn = sessionStorage.getItem("sessaoAutenticada") === "true";
+                if (view === "painel" && !loggedIn) {
+                    history.replaceState(null, "", "#login");
+                    view = "login";
+                    setMessage(loginMensagem, "Entre na sua conta para acessar o painel.", "error");
+                }
+
+                const isDashboard = view === "painel";
+                authScreen.hidden = isDashboard;
+                dashboardView.hidden = !isDashboard;
+                cadastroView.hidden = view !== "cadastro";
+                loginView.hidden = view !== "login";
+                brandHeadline.textContent = view === "login"
+                    ? "Gestão, automação e análise de dados em um só lugar."
+                    : "Crie sua conta e comece a organizar o seu negócio.";
+
+                if (isDashboard) {
+                    const usuario = sessionStorage.getItem("usuarioLogado") || localStorage.getItem("usuarioCadastrado") || "";
+                    document.getElementById("nomeUsuario").textContent = usuario;
+                    document.getElementById("avatar").textContent = usuario.charAt(0).toUpperCase();
+                    document.getElementById("usuarioLogado").hidden = !usuario;
+                }
+            }
+
+            function navigateTo(view, replace = false) {
+                const hash = "#" + view;
+                if (window.location.hash !== hash) {
+                    if (replace) history.replaceState(null, "", hash);
+                    else history.pushState(null, "", hash);
+                }
+                showView(view);
+            }
+
+            document.querySelectorAll("[data-route]").forEach((link) => {
+                link.addEventListener("click", (event) => {
+                    event.preventDefault();
+                    setMessage(cadastroMensagem, "", null);
+                    setMessage(loginMensagem, "", null);
+                    navigateTo(link.dataset.route);
+                });
+            });
+
+            window.addEventListener("popstate", () => {
+                const requested = window.location.hash.slice(1);
+                showView(["cadastro", "login", "painel"].includes(requested) ? requested : "cadastro");
+            });
+            window.addEventListener("hashchange", () => {
+                const requested = window.location.hash.slice(1);
+                showView(["cadastro", "login", "painel"].includes(requested) ? requested : "cadastro");
+            });
+
+            document.getElementById("formCadastro").addEventListener("submit", (event) => {
+                event.preventDefault();
+                const nome = document.getElementById("cad-nome");
+                const email = document.getElementById("cad-email");
+                const usuario = document.getElementById("cad-usuario");
+                const senha = document.getElementById("cad-senha");
+                const confirmar = document.getElementById("cad-confirmar");
+                const campos = [nome, email, usuario, senha, confirmar];
+                campos.forEach((campo) => campo.classList.remove("erro"));
+                setMessage(cadastroMensagem, "", null);
+
+                function falha(campo, texto) {
+                    campo.classList.add("erro");
+                    campo.focus();
+                    setMessage(cadastroMensagem, texto, "error");
+                }
+
+                if (nome.value.trim().length < 3) return falha(nome, "O nome deve ter pelo menos 3 caracteres.");
+                if (!email.validity.valid || !email.value.includes("@") || !email.value.includes(".")) return falha(email, "Digite um e-mail válido.");
+                if (!usuario.value.trim() || /\s/.test(usuario.value.trim())) return falha(usuario, "O usuário não pode ter espaços.");
+                if (senha.value.length < 6) return falha(senha, "A senha deve ter pelo menos 6 caracteres.");
+                if (senha.value !== confirmar.value) return falha(confirmar, "As senhas não são iguais.");
+
+                try {
+                    localStorage.setItem("usuarioCadastrado", usuario.value.trim());
+                    localStorage.setItem("senhaCadastrada", senha.value);
+                    localStorage.setItem("nomeCadastrado", nome.value.trim());
+                } catch (error) {
+                    setMessage(cadastroMensagem, "Não foi possível salvar os dados neste navegador.", "error");
+                    return;
+                }
+
+                sessionStorage.removeItem("sessaoAutenticada");
+                sessionStorage.removeItem("usuarioLogado");
+                setMessage(cadastroMensagem, "Cadastro realizado! Redirecionando para o login...", "success");
+                window.setTimeout(() => {
+                    setMessage(cadastroMensagem, "", null);
+                    document.getElementById("login-usuario").value = usuario.value.trim();
+                    navigateTo("login");
+                }, 800);
+            });
+
+            document.getElementById("formLogin").addEventListener("submit", (event) => {
+                event.preventDefault();
+                const usuarioDigitado = document.getElementById("login-usuario").value.trim();
+                const senhaDigitada = document.getElementById("login-senha").value;
+                setMessage(loginMensagem, "", null);
+
+                let usuarioCadastrado = null;
+                let senhaCadastrada = null;
+                try {
+                    usuarioCadastrado = localStorage.getItem("usuarioCadastrado");
+                    senhaCadastrada = localStorage.getItem("senhaCadastrada");
+                } catch (error) {
+                    setMessage(loginMensagem, "Não foi possível acessar os dados salvos neste navegador.", "error");
+                    return;
+                }
+
+                if (!usuarioCadastrado || senhaCadastrada === null) {
+                    setMessage(loginMensagem, "Nenhuma conta encontrada. Faça seu cadastro primeiro.", "error");
+                    return;
+                }
+                if (usuarioDigitado !== usuarioCadastrado || senhaDigitada !== senhaCadastrada) {
+                    setMessage(loginMensagem, "Usuário ou senha incorretos.", "error");
+                    return;
+                }
+
+                sessionStorage.setItem("sessaoAutenticada", "true");
+                sessionStorage.setItem("usuarioLogado", usuarioCadastrado);
+                setMessage(loginMensagem, "Login realizado! Entrando...", "success");
+                window.setTimeout(() => navigateTo("painel"), 400);
+            });
+
+            document.querySelectorAll(".toggle-password").forEach((button) => {
+                button.addEventListener("click", () => {
+                    const field = document.getElementById(button.dataset.target);
+                    const show = field.type === "password";
+                    field.type = show ? "text" : "password";
+                    button.classList.toggle("active", show);
+                    button.setAttribute("aria-label", show ? "Ocultar senha" : "Mostrar senha");
+                });
+            });
+
+            document.getElementById("botaoSair").addEventListener("click", () => {
+                sessionStorage.removeItem("sessaoAutenticada");
+                sessionStorage.removeItem("usuarioLogado");
+                setMessage(loginMensagem, "Você saiu da sua conta.", "success");
+                navigateTo("login");
+            });
+
+            document.getElementById("forgotPassword").addEventListener("click", (event) => {
+                event.preventDefault();
+                setMessage(loginMensagem, "A recuperação de senha ainda não está disponível nesta demonstração.", "error");
+            });
+
+            const initialView = window.location.hash.slice(1);
+            showView(["cadastro", "login", "painel"].includes(initialView) ? initialView : "cadastro");
+        })();
+    </script>
+</body>
+</html>
